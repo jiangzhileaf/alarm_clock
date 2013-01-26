@@ -47,8 +47,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		// TODO Auto-generated method stub
 		System.out.println("create a DataBase");
-		String sql = "drop table if exists "+TABLE_NAME;
-		db.execSQL(sql);
 		String partSQL = "";
 		for (int i = 0; i <= 6; i++)
 			// 周一到周末 分别为 repeat0 到 repeat6
@@ -58,16 +56,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ "(id integer primary key autoincrement," + NAME
 				+ " varchar(20) ," + HOUR + " int not null," + MINUTE
 				+ " int not null," + LEVEL + " int not null," + partSQL
-				+ ISOPEN + " boolean," + ISVIBRATE + " boolean," + ISNEW+" boolean,"+AUDIOTYPE
-				+ " varchar(30))");
-		insertOKColock(new ClockParameter());
-		insertOKColock(new ClockParameter());
+				+ ISOPEN + " boolean," + ISVIBRATE + " boolean," + ISNEW
+				+ " boolean," + AUDIOTYPE + " varchar(30))");
+		System.out.println("create ok");
+		db.execSQL("insert into " + TABLE_NAME
+				+ " values(1,'undefine',8,0,1,1,1,1,1,1,1,1,0,1,0,'default')");
+		db.execSQL("insert into " + TABLE_NAME
+				+ " values(2,'undefine',9,0,1,1,1,1,1,1,1,1,0,1,0,'default')");
+		System.out.println("insert ok");
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int arg1, int arg2) {
-		
-		String sql = "drop table if exists "+TABLE_NAME;
+		String sql = "drop table if exists " + TABLE_NAME;
 		db.execSQL(sql);
 	}
 
@@ -111,7 +112,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 		String where = ID + "=?";
 		String[] whereValues = { id };
-		db.delete(TABLE_NAME, where, whereValues);
+		System.out.println("deleteSQL : delete from" + TABLE_NAME + " " + where
+				+ "=" + id);
+		int i=db.delete(TABLE_NAME, where, whereValues);
+		System.out.println("delete result"+i);
 		db.close();
 	}
 

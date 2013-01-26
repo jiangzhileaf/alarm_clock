@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -65,7 +66,8 @@ public class SettingsActivity extends Activity {
 								| AudioManager.FLAG_PLAY_SOUND);// 调低声音
 				break;
 			case R.id.statistics: // 展示数据
-				// showData();
+				Intent intent = new Intent(SettingsActivity.this,DataShowActivity.class);
+				startActivity(intent);
 				break;
 			case R.id.upload: // 上传数据
 				System.out.println("我点击了！！ ");

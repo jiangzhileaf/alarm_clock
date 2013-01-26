@@ -21,7 +21,7 @@ public class ClockParameter implements Serializable {
 		this.minute = 0;
 		this.isopen = false;
 		this.level = 1;
-		this.isnew=false;
+		this.isnew=true;
 		this.isvabrate=true;
 		this.repeat = new boolean[7];
 		this.audiotype="";

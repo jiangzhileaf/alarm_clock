@@ -1,12 +1,8 @@
 package com.killerban.okclock;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-
-import com.killerban.database.DatabaseHelper;
-import com.killerban.model.ClockParameter;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -14,15 +10,18 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+
+import com.killerban.database.DatabaseHelper;
+import com.killerban.model.ClockParameter;
 
 public class MainActivity extends Activity {
 
@@ -43,22 +42,15 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		editColckButton = (Button) findViewById(R.id.clockEdit);
-		editColckButton2 = (Button) findViewById(R.id.clockEdit2);
-		clockSwitchButton = (ToggleButton) findViewById(R.id.clockSwitch);
-		clockSwitchButton2 = (ToggleButton) findViewById(R.id.clockSwitch2);
 		settingsButton = (Button) findViewById(R.id.settings);
 		addClockButton = (Button) findViewById(R.id.addClock);
 		weekTextView = (TextView) findViewById(R.id.week);
 		dateTextView = (TextView) findViewById(R.id.date);
+
 		
-		editColckButton.setOnClickListener(listener);
-		editColckButton2.setOnClickListener(listener);
-		clockSwitchButton.setOnClickListener(listener);
-		clockSwitchButton2.setOnClickListener(listener);
 		settingsButton.setOnClickListener(listener);
 		addClockButton.setOnClickListener(listener);
-		
+
 		getDateAndWeek(); // 获取当前星期几和日期
 		getClockData(); // 获取数据库的闹钟的数据
 	}
@@ -67,6 +59,7 @@ public class MainActivity extends Activity {
 	 * 为Button绑定监听器 ，根据Id不同触发不同的事件 其中大多数为调用EditClockActivity
 	 * 所以新建了sentIntent()函数统一调用
 	 */
+
 	View.OnClickListener listener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
@@ -74,22 +67,7 @@ public class MainActivity extends Activity {
 			intent = new Intent();
 			Bundle bundle = new Bundle();
 			switch (v.getId()) {
-			case R.id.clockEdit:
-				bundle.putSerializable("clock", list.get(0));
-				intent.putExtras(bundle);
-				sentIntent(intent);
-				break;
-			case R.id.clockEdit2:
-				bundle.putSerializable("clock", list.get(1));
-				intent.putExtras(bundle);
-				sentIntent(intent);
-				break;
-			case R.id.clockSwitch: // 启动或者关闭闹钟
-				changeStatus(list.get(0));
-				break;
-			case R.id.clockSwitch2:
-				changeStatus(list.get(1));
-				break;
+			
 			case R.id.settings: // 闹铃
 				intent.setClass(MainActivity.this, SettingsActivity.class);
 				startActivity(intent);
@@ -105,6 +83,35 @@ public class MainActivity extends Activity {
 		}
 	};
 
+	void init() {
+		// 获取数据库资料
+
+	}
+
+	void linearLayoutFormat(LinearLayout linearLayout){
+		
+	}
+	
+	void buttonEditFormat(Button btClockEdit) {
+		btClockEdit.setBackgroundResource(R.drawable.bt_clock_edit);                             // 设置背景
+		btClockEdit.setLayoutParams(new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT,
+				1.0f));                                                                          // 设置长、宽、比重
+		btClockEdit.setShadowLayer(5, 0, 0, getResources().getColor(R.color.black));             // 设置阴影
+		btClockEdit.setTextColor(getResources().getColor(R.color.white));                        // 设置字体颜色
+		btClockEdit.setTypeface(Typeface.DEFAULT_BOLD);                                          // 设置字体
+	}
+
+	void buttonSwitchFormat(ToggleButton btClockToggle) {
+		btClockToggle.setBackgroundResource(R.drawable.bt_toggle_bg);                            // 设置背景
+		btClockToggle.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+				LayoutParams.MATCH_PARENT));                                                     // 设置长、宽、比重
+		btClockToggle.setTextOff(null);                                                          // 设置开关关闭状态文字为空
+		btClockToggle.setTextOn(null);                                                           // 设置开关关启动态文字为空
+		btClockToggle.setShadowLayer(5, 0, 0, getResources().getColor(R.color.black));           // 设置阴影
+		btClockToggle.setTextColor(getResources().getColor(R.color.white));                      // 设置字体颜色
+		btClockToggle.setTypeface(Typeface.DEFAULT_BOLD);                                        // 设置字体
+	}
+
 	// Test
 	void changeStatus(ClockParameter param) {
 		if (!param.isIsopen()) {
@@ -118,7 +125,7 @@ public class MainActivity extends Activity {
 		}
 		DatabaseHelper dbHelper = new DatabaseHelper(MainActivity.this,
 				DatabaseHelper.DATABASE_NAME);
-		dbHelper.updateOKColock(param.getId()+"", param);
+		dbHelper.updateOKColock(param.getId() + "", param);
 	}
 
 	// Test
@@ -128,10 +135,9 @@ public class MainActivity extends Activity {
 		Bundle bundle = new Bundle();
 		bundle.putSerializable("clock", param);
 		intent.putExtras(bundle);
-		PendingIntent pi = PendingIntent.getActivity(MainActivity.this,
-				param.getId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		am.set(AlarmManager.RTC_WAKEUP,
-				System.currentTimeMillis() + 1000, pi);
+		PendingIntent pi = PendingIntent.getActivity(MainActivity.this, param.getId(), intent,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+		am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 1000, pi);
 
 	}
 
@@ -139,8 +145,7 @@ public class MainActivity extends Activity {
 	void setClockOff(int id) {
 		AlarmManager am = (AlarmManager) getSystemService(Service.ALARM_SERVICE);
 		Intent intent = new Intent(MainActivity.this, AlarmRingActivity.class);
-		PendingIntent pi = PendingIntent.getActivity(MainActivity.this, id,
-				intent, 0);
+		PendingIntent pi = PendingIntent.getActivity(MainActivity.this, id, intent, 0);
 		am.cancel(pi);
 	}
 
@@ -152,30 +157,36 @@ public class MainActivity extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		// 从EditClockActivity 返回的参数
-		if (requestCode == REQUEST_CODE
-				&& resultCode == EditClockActivity.RESULT_CODE) {
-			ClockParameter param = (ClockParameter) data
-					.getSerializableExtra("clock");
+		if (requestCode == REQUEST_CODE && resultCode == EditClockActivity.RESULT_CODE) {
+			ClockParameter param = (ClockParameter) data.getSerializableExtra("clock");
 			DatabaseHelper dbHelper = new DatabaseHelper(MainActivity.this,
 					DatabaseHelper.DATABASE_NAME);
-			if (param.isIsnew())
-			{
-				param.setIsnew(false);		//更改状态
-				dbHelper.insertOKColock(param);
+
+			// 若返回的是删除闹钟的状态则 删除对应的Button
+			// 否则 判断返回的闹钟是否为新建闹钟 是则插入到数据库 ，不是则更新其在数据库的信息(因为有可能有修改)
+			if (!data.getExtras().getBoolean("save")) {
+				System.out.println("已经删除闹钟");
+				getClockData();
+			} else {
+				if (param.isIsnew()) {
+					param.setIsnew(false); // 更改状态
+					dbHelper.insertOKColock(param);
+				} else {
+					dbHelper.updateOKColock(param.getId() + "", param);
+				}
+
+				String info = param.getHour() + ":";
+				String minute = param.getMinute() + "";
+				if (minute.length() == 1)
+					info += "0";
+				info += minute;
+				info += ("   " + param.getName() + "\n");
+				info += getRepeatInfo(param.getRepeat());
+				if (param.getId() == 1)
+					editColckButton.setText(info);
+				else
+					editColckButton2.setText(info);
 			}
-			else
-				dbHelper.updateOKColock(param.getId() + "", param);
-			String info = param.getHour() + ":";
-			String minute = param.getMinute() + "";
-			if (minute.length() == 1)
-				info += "0";
-			info += minute;
-			info += ("   " + param.getName() + "\n");
-			info += getRepeatInfo(param.getRepeat());
-			if (param.getId() == 11)
-				editColckButton.setText(info);
-			else
-				editColckButton2.setText(info);
 		}
 	}
 
@@ -186,32 +197,29 @@ public class MainActivity extends Activity {
 		ClockParameter param;
 		Cursor cursor = dbHelper.selectOKColock();
 		boolean[] repeat = new boolean[7];
-		int index=1;
-		while (cursor.moveToNext()&&index<=2) {
+		int index = 1;
+		while (cursor.moveToNext() && index <= 2) {
 			param = new ClockParameter();
 			param.setHour(Integer.parseInt(cursor.getString(cursor
 					.getColumnIndex(DatabaseHelper.HOUR))));
 			param.setMinute(Integer.parseInt(cursor.getString(cursor
 					.getColumnIndex(DatabaseHelper.MINUTE))));
-			param.setId(Integer.parseInt(cursor.getString(cursor
-					.getColumnIndex(DatabaseHelper.ID))));
+			param.setId(Integer.parseInt(cursor.getString(cursor.getColumnIndex(DatabaseHelper.ID))));
 			param.setLevel(Integer.parseInt(cursor.getString(cursor
 					.getColumnIndex(DatabaseHelper.LEVEL))));
-			param.setName(cursor.getString(cursor
-					.getColumnIndex(DatabaseHelper.NAME)));
-			param.setIsvabrate(cursor.getString(cursor
-					.getColumnIndex(DatabaseHelper.ISVIBRATE)).equals("1"));
-			param.setIsopen(cursor.getString(cursor
-					.getColumnIndex(DatabaseHelper.ISOPEN)).equals("1"));
-			param.setIsnew(cursor.getString(cursor
-					.getColumnIndex(DatabaseHelper.ISNEW)).equals("1"));
+			param.setName(cursor.getString(cursor.getColumnIndex(DatabaseHelper.NAME)));
+			param.setIsvabrate(cursor.getString(cursor.getColumnIndex(DatabaseHelper.ISVIBRATE))
+					.equals("1"));
+			param.setIsopen(cursor.getString(cursor.getColumnIndex(DatabaseHelper.ISOPEN)).equals(
+					"1"));
+			param.setIsnew(cursor.getString(cursor.getColumnIndex(DatabaseHelper.ISNEW))
+					.equals("1"));
 			for (int i = 0; i <= 6; i++) {
 				/*
 				 * repeat[i] = Boolean.parseBoolean(cursor.getString(cursor
 				 * .getColumnIndex((DatabaseHelper.REPEAT + i)))); 用此方法无效 其只有01值
 				 */
-				if ((cursor.getString(cursor
-						.getColumnIndex((DatabaseHelper.REPEAT + i))))
+				if ((cursor.getString(cursor.getColumnIndex((DatabaseHelper.REPEAT + i))))
 						.equals("1")) {
 					repeat[i] = true;
 				} else
@@ -231,18 +239,15 @@ public class MainActivity extends Activity {
 			s += m;
 			s += ("   " + param.getName() + "\n");
 			s += getRepeatInfo(repeat);
-			if (index== 1)
-			{
+			if (index == 1) {
 				editColckButton.setText(s);
 				System.out.println(param.isIsopen());
 				clockSwitchButton.setChecked(param.isIsopen());
-			}
-			else
-			{	
+			} else {
 				editColckButton2.setText(s);
 				System.out.println(param.isIsopen());
-				clockSwitchButton.setChecked(param.isIsopen());
-			
+				clockSwitchButton2.setChecked(param.isIsopen());
+
 			}
 			index++;
 		}
@@ -260,30 +265,27 @@ public class MainActivity extends Activity {
 			if (dayOfWeek == i) {
 				weekTextView.setText("星期" + week[i]);
 			}
-		dateTextView
-				.setText((c.get(Calendar.YEAR) + "年"
-						+ (c.get(Calendar.MONTH) + 1) + "月"
-						+ c.get(Calendar.DATE) + "日"));// 获取年月日
+		dateTextView.setText((c.get(Calendar.YEAR) + "年" + (c.get(Calendar.MONTH) + 1) + "月"
+				+ c.get(Calendar.DATE) + "日"));// 获取年月日
 
 	}
 
 	static String getRepeatInfo(boolean[] repeat) {
 		String info = "周";
 		String[] week = { "日 ", "一 ", "二 ", "三 ", "四 ", "五 ", "六 " };
-		if (repeat[0] && repeat[6] && !repeat[1] && !repeat[2] && !repeat[3]
-				&& !repeat[4] && !repeat[5]) {
+		if (repeat[0] && repeat[6] && !repeat[1] && !repeat[2] && !repeat[3] && !repeat[4]
+				&& !repeat[5]) {
 			return "周末";
 		}
-		if (!repeat[0] && !repeat[6] && repeat[1] && repeat[2] && repeat[3]
-				&& repeat[4] && repeat[5]) {
+		if (!repeat[0] && !repeat[6] && repeat[1] && repeat[2] && repeat[3] && repeat[4]
+				&& repeat[5]) {
 			return "周一到五";
 		}
-		if (repeat[0] && repeat[6] && repeat[1] && repeat[2] && repeat[3]
-				&& repeat[4] && repeat[5]) {
+		if (repeat[0] && repeat[6] && repeat[1] && repeat[2] && repeat[3] && repeat[4] && repeat[5]) {
 			return "每天响铃";
 		}
-		if (!repeat[0] && !repeat[6] && !repeat[1] && !repeat[2] && !repeat[3]
-				&& !repeat[4] && !repeat[5]) {
+		if (!repeat[0] && !repeat[6] && !repeat[1] && !repeat[2] && !repeat[3] && !repeat[4]
+				&& !repeat[5]) {
 			return "只响一次";
 		}
 		for (int i = 0; i <= 6; i++) {

@@ -7,6 +7,8 @@
 
             <corners
                 android:bottomLeftRadius="7dp"
+                android:bottomRightRadius="7dp"
+                android:topLeftRadius="7dp"
                 android:topRightRadius="7dp" />
 
             <padding
@@ -16,8 +18,8 @@
                 android:top="22dp" />
         </shape>
     </item>
-    
     <item
         android:id="@+android:id/toggle"
         android:drawable="@drawable/bt_toggle"/>
+
 </layer-list>

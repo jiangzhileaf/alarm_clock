@@ -2,6 +2,7 @@ package com.killerban.okclock;
 
 import java.util.Calendar;
 
+import com.killerban.database.DatabaseHelper;
 import com.killerban.model.ClockParameter;
 
 import android.app.Activity;
@@ -31,7 +32,7 @@ public class EditClockActivity extends Activity {
 	private Button clockCircleButton; // 闹钟周期
 	private Button vibrateButton; // 响铃时是否震动
 	private Button saveButton; // 储存
-	private Button deleteButton;	//删除
+	private Button deleteButton; // 删除
 	private Button timeButton; // 设置闹铃时间按钮
 	private Button levelButton; // 级别
 
@@ -45,8 +46,8 @@ public class EditClockActivity extends Activity {
 		clockCircleButton = (Button) findViewById(R.id.clock_repeat);
 		levelButton = (Button) findViewById(R.id.clock_model);
 		vibrateButton = (Button) findViewById(R.id.vibrate);
-		deleteButton =(Button)findViewById(R.id.delete_clock);
-		
+		deleteButton = (Button) findViewById(R.id.delete_clock);
+
 		timeButton.setOnClickListener(listener);
 		saveButton.setOnClickListener(listener);
 		clockNameButton.setOnClickListener(listener);
@@ -57,7 +58,7 @@ public class EditClockActivity extends Activity {
 
 		param = (ClockParameter) getIntent().getExtras().getSerializable(
 				"clock");
-		System.out.println(param.getId()+" "+param.isIsnew());
+		System.out.println(param.getId() + " " + param.isIsnew());
 		initButtonText(); // 初始化按钮的文本信息
 
 	}
@@ -87,10 +88,10 @@ public class EditClockActivity extends Activity {
 				break;
 			case R.id.save:
 				param.setIsopen(true);
-				callBack();
+				callBack(true);
 				finish();
 				break;
-			case R.id.delete_clock:	//删除闹钟，弹出确认对话框
+			case R.id.delete_clock: // 删除闹钟，弹出确认对话框
 				showDeleteDialog();
 				break;
 			case R.id.clock_model:
@@ -117,17 +118,27 @@ public class EditClockActivity extends Activity {
 		}
 	};
 
-	void showDeleteDialog()
-	{
+	void showDeleteDialog() {
 		new AlertDialog.Builder(this).setTitle("确定要删除？")
 				.setPositiveButton("确定", new OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
 						// TODO Auto-generated method stub
-						Toast.makeText(EditClockActivity.this,"闹钟已删除...", Toast.LENGTH_LONG).show();
+						Toast.makeText(EditClockActivity.this, "闹钟已删除...",
+								Toast.LENGTH_LONG).show();
+						// 若闹钟不是新建的闹钟 即已经在数据库 则删除
+						if (!param.isIsnew()) {
+							DatabaseHelper db = new DatabaseHelper(
+									EditClockActivity.this,
+									DatabaseHelper.TABLE_NAME);
+							System.out.println("闹钟Id=" + param.getId());
+							db.deleteOKColock(String.valueOf(param.getId()));
+						}
+						callBack(false);
+						finish();
 					}
 				}).setNegativeButton("取消", null).show();
 	}
-	
+
 	void setRepeatDay() {
 		Intent intent = new Intent(EditClockActivity.this,
 				WeekRepeatActivity.class);
@@ -164,7 +175,8 @@ public class EditClockActivity extends Activity {
 		new AlertDialog.Builder(this)
 				.setTitle("请选择难度")
 				.setIcon(android.R.drawable.ic_dialog_info)
-				.setSingleChoiceItems(new String[] { "简单:加法", "困难:乘法" }, param.getLevel()-1,
+				.setSingleChoiceItems(new String[] { "简单:加法", "困难:乘法" },
+						param.getLevel() - 1,
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,
 									int which) {
@@ -178,8 +190,9 @@ public class EditClockActivity extends Activity {
 						}).setNegativeButton("取消", null).show();
 	}
 
-	void callBack() {
+	void callBack(boolean save) {
 		Intent intent = new Intent();
+		intent.putExtra("save", save);
 		intent.putExtra("clock", param);
 		setResult(RESULT_CODE, intent);
 	}

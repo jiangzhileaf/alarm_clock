@@ -28,15 +28,15 @@
     <string name="update">软件更新（待完善）</string>
     <string name="volumeup">增大音量</string>
     <string name="volumedown">降低音量</string>
-    
+
     <!-- 闹钟响界面 -->
     <string name="title_activity_alarm_ring">UPUPUP</string>
     <string name="slogan">起来啦~</string>
     <string name="getUp">起来</string>
     <string name="nap">小睡</string>
-    
+
     <!-- 闹钟周期界面 -->
-     <string name="monday">星期一</string>
+    <string name="monday">星期一</string>
     <string name="tuesday">星期二</string>
     <string name="wednesday">星期三</string>
     <string name="thursday">星期四</string>
@@ -44,15 +44,16 @@
     <string name="saturday">星期六</string>
     <string name="sunday">星期日</string>
     <string name="ok">确认</string>
-   
     <string name="title_activity_unlock">UnlockActivity</string>
 
-	<!-- 注册界面 -->
-	     <string name="userid">账                 号:</string>
-       <string name="password">密码(长度>=6):</string>
- <string name="password_again">确    认   密   码:</string>
-       <string name="username">昵称(长度>=2):</string>
-       <string name="check">检测注册信息</string>
-	
+    <!-- 注册界面 -->
+    <string name="userid">账                 号:</string>
+    <string name="password">密码(长度>=6):</string>
+    <string name="password_again">确    认   密   码:</string>
+    <string name="username">昵称(长度>=2):</string>
+    <string name="check">检测注册信息</string>
+
+    <!--  显示用户起床信息界面-->
+    <string name="data_title">日期     | 难度等级  | 起床成功否  |  起床时间</string>
     
 </resources>
