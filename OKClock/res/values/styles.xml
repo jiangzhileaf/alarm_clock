@@ -1,0 +1,93 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+    -->
+    <style name="AppBaseTheme" parent="android:Theme.Wallpaper.NoTitleBar">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+
+    <!-- 文字样式 -->
+    <style name="text_style">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">5</item>
+    </style>
+
+    <!-- 按钮样式 -->
+    <style name="button_style" parent="@style/text_style">
+        <item name="android:background">@drawable/bt_background</item>
+    </style>
+
+    <!-- 标题栏 -->
+    <!-- 标题栏样式 -->
+    <style name="headbar_layout">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">@drawable/title_background</item>
+    </style>
+
+    <!-- 标题栏按钮 -->
+    <style name="headbar_button" parent="@style/text_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <!-- 标题栏文字 -->
+    <style name="headbar_textview" parent="@style/text_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <!-- 闹钟按钮布局 -->
+    <style name="clock_bar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+    </style>
+
+    <!-- 闹钟编辑按钮 -->
+    <style name="clock_edit" parent="@style/text_style">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@drawable/bt_clock_edit</item>
+    </style>
+
+    <!-- 闹钟开关 -->
+    <style name="clock_switch" parent="@style/text_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textOn">@null</item>
+        <item name="android:textOff">@null</item>
+        <item name="android:background">@drawable/bt_toggle_bg</item>
+    </style>
+
+    <!-- 编辑闹钟界面按钮样式 -->
+    <style name="button_activity_edit" parent="@style/button_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:layout_marginLeft">12dp</item>
+        <item name="android:layout_marginRight">12dp</item>
+        <item name="android:gravity">left</item>
+    </style>
+
+</resources>

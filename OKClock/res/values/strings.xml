@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 唔用 -->
+    <string name="menu_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+
+    <!-- 主界面 -->
+    <string name="app_name">NOW~</string>
+
+    <!-- 编辑界面 -->
+    <string name="title_activity_edit_clock">编辑</string>
+    <string name="delete">删除</string>
+    <string name="save">存储</string>
+    <string name="clock_tag">闹钟名称</string>
+    <string name="ring_time">响铃时间</string>
+    <string name="clock_repeat">响铃周期</string>
+    <string name="clock_model">自虐模式</string>
+    <string name="clock_sound">铃声:默认(待完善)</string>
+    <string name="vibrate">震动:</string>
+
+    <!-- 设置界面 -->
+    <string name="title_activity_settings">设置</string>
+    <string name="feedback">反馈建议</string>
+    <string name="statistics">统计数据</string>
+    <string name="upload">上传数据</string>
+    <string name="rankList">排行榜</string>
+    <string name="update">软件更新（待完善）</string>
+    <string name="volumeup">增大音量</string>
+    <string name="volumedown">降低音量</string>
+    
+    <!-- 闹钟响界面 -->
+    <string name="title_activity_alarm_ring">UPUPUP</string>
+    <string name="slogan">起来啦~</string>
+    <string name="getUp">起来</string>
+    <string name="nap">小睡</string>
+    
+    <!-- 闹钟周期界面 -->
+     <string name="monday">星期一</string>
+    <string name="tuesday">星期二</string>
+    <string name="wednesday">星期三</string>
+    <string name="thursday">星期四</string>
+    <string name="friday">星期五</string>
+    <string name="saturday">星期六</string>
+    <string name="sunday">星期日</string>
+    <string name="ok">确认</string>
+   
+    <string name="title_activity_unlock">UnlockActivity</string>
+
+	<!-- 注册界面 -->
+	     <string name="userid">账                 号:</string>
+       <string name="password">密码(长度>=6):</string>
+ <string name="password_again">确    认   密   码:</string>
+       <string name="username">昵称(长度>=2):</string>
+       <string name="check">检测注册信息</string>
+	
+    
+</resources>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/headbar_edit_clock"
+        style="@style/headbar_layout" >
+
+        <Button
+            android:id="@+id/delete_clock"
+            style="@style/headbar_button"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/bt_headbar_bg"
+            android:text="@string/delete"
+            android:textSize="12sp" />
+
+        <TextView
+            style="@style/headbar_textview"
+            android:layout_centerInParent="true"
+            android:text="@string/title_activity_edit_clock"
+            android:textSize="17sp" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/delete_clock"
+        android:layout_below="@id/headbar_edit_clock"
+        android:layout_marginTop="5dp" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" >
+
+            <Button
+                android:id="@+id/clock_tag"
+                style="@style/button_activity_edit"
+                android:text="@string/clock_tag" />
+
+            <Button
+                android:id="@+id/ring_time"
+                style="@style/button_activity_edit"
+                android:text="@string/ring_time" />
+
+            <Button
+                android:id="@+id/clock_repeat"
+                style="@style/button_activity_edit"
+                android:text="@string/clock_repeat" />
+
+            <Button
+                android:id="@+id/clock_model"
+                style="@style/button_activity_edit"
+                android:text="@string/clock_model" />
+
+            <Button
+                android:id="@+id/clock_sound"
+                style="@style/button_activity_edit"
+                android:text="@string/clock_sound" />
+
+            <Button
+                android:id="@+id/vibrate"
+                style="@style/button_activity_edit"
+                android:text="@string/vibrate" />
+        </LinearLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/save"
+        style="@style/text_style"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:background="@drawable/bt_delete"
+        android:text="@string/save" />
+
+</RelativeLayout>
