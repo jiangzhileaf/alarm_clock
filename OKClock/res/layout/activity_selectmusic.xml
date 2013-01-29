@@ -1,34 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
-
-    <RelativeLayout
+  <RelativeLayout
         android:id="@+id/headbar_settings"
         style="@style/headbar_layout" >
 
         <TextView
             style="@style/headbar_textview"
             android:layout_centerInParent="true"
-            android:text="@string/title_activity_data_show"
+            android:text="@string/select_music"
             android:textSize="17sp" />
     </RelativeLayout>
+    
+    <TextView
+        android:id="@+id/textview"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:background="#ffff00"
+        />
 
     <ListView
         android:id="@+id/android:list"
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:background="#5f000000"
-        android:divider="#000000"
-        android:dividerHeight="3dp" >
+         >
     </ListView>
-    <!--
-     	<TextView
-  	    	android:id="@+id/data_textview"
-            style="@style/headbar_textview"
-            android:textSize="17sp" />
-    -->
 
 </LinearLayout>

@@ -1,4 +1,8 @@
-package com.killerban.okclock;
+package com.killerban.editclock;
+
+import com.killerban.okclock.R;
+import com.killerban.okclock.R.id;
+import com.killerban.okclock.R.layout;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -22,7 +26,7 @@ public class WeekRepeatActivity extends Activity {
 	private CheckBox saturdayBox;
 	private CheckBox sundayBox;
 	private Button okButton;
-	final static int RESULT_CODE = 1;
+	final static int RESULT_CODE = 3;
 	private boolean[] select = new boolean[7];
 
 	protected void onCreate(Bundle savedInstanceState) {

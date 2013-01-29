@@ -8,9 +8,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class GetUpDatabaseHelper extends SQLiteOpenHelper {
 
+	private final static String TAG="GetUpDatabaseHelper";
+	
 	private static final int VERSION = 1;
 	public final static String DATABASE_NAME = "getup_db";
 	public static final String TABLE_NAME = "getup_info";
@@ -19,6 +22,8 @@ public class GetUpDatabaseHelper extends SQLiteOpenHelper {
 	public final static String YEAR = "year";
 	public final static String MONTH = "month";
 	public final static String DAY = "day";
+	public final static String HOUR = "hour";
+	public final static String MINUTE = "minute";
 	public final static String TIME = "time";
 	public final static String LEVEL = "level";
 	public final static String SUCCESS = "success";
@@ -43,13 +48,12 @@ public class GetUpDatabaseHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		// TODO Auto-generated method stub
-		System.out.println("create a getup DataBase");
-		String sql = "drop table if exists "+TABLE_NAME;
-		db.execSQL(sql);
+		Log.i(TAG,"create a getup DataBase OK");
 		db.execSQL("create table " + TABLE_NAME
 				+ "(id integer primary key autoincrement," + YEAR
 				+ " int not null," + MONTH + " int not null," + DAY
-				+ " day not null," + TIME + " long not null," + LEVEL
+				+ " int not null," + HOUR + " int not null," + MINUTE
+				+ " int not null," + TIME + " long not null," + LEVEL
 				+ " int not null," + SUCCESS + " boolean)");
 	}
 
@@ -66,10 +70,11 @@ public class GetUpDatabaseHelper extends SQLiteOpenHelper {
 		values.put(YEAR, info.getYear());
 		values.put(MONTH, info.getMonth());
 		values.put(DAY, info.getDay());
+		values.put(HOUR, info.getHour());
+		values.put(MINUTE, info.getMinute());
 		values.put(LEVEL, info.getLevel());
 		values.put(TIME, info.getTime());
 		values.put(SUCCESS, info.isSuccess());
-		System.out.println("insert Database");
 		long result = db.insert(TABLE_NAME, null, values);
 		db.close();
 		return result;
@@ -107,6 +112,8 @@ public class GetUpDatabaseHelper extends SQLiteOpenHelper {
 		values.put(YEAR, info.getYear());
 		values.put(MONTH, info.getMonth());
 		values.put(DAY, info.getDay());
+		values.put(HOUR, info.getHour());
+		values.put(MINUTE, info.getMinute());
 		values.put(LEVEL, info.getLevel());
 		values.put(TIME, info.getTime());
 		values.put(SUCCESS, info.isSuccess());

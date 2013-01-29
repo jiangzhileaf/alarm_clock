@@ -2,13 +2,13 @@
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
-        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
     -->
     <style name="AppBaseTheme" parent="android:Theme.Wallpaper.NoTitleBar">
         <!--
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
-            backward-compatibility can go here.
+            backward-compatibility can go here.
         -->
     </style>
 
@@ -25,6 +25,7 @@
         <item name="android:shadowDx">0</item>
         <item name="android:shadowDy">0</item>
         <item name="android:shadowRadius">5</item>
+        <item name="android:textSize">17sp</item>
     </style>
 
     <!-- 按钮样式 -->
@@ -88,6 +89,11 @@
         <item name="android:layout_marginLeft">12dp</item>
         <item name="android:layout_marginRight">12dp</item>
         <item name="android:gravity">left</item>
+    </style>
+
+    <style name="DailogTheme" parent="android:style/Theme.Dialog">
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:width">225dp</item>
     </style>
 
 </resources>

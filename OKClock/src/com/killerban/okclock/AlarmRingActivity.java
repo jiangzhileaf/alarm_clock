@@ -1,32 +1,37 @@
 package com.killerban.okclock;
 
+import java.io.IOException;
 import java.util.Calendar;
+import java.util.Date;
 
-import com.killerban.database.GetUpDatabaseHelper;
-import com.killerban.model.ClockParameter;
-import com.killerban.model.GetUpInfo;
-
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.app.KeyguardManager;
+import android.app.KeyguardManager.KeyguardLock;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.Vibrator;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
-import android.app.AlarmManager;
-import android.app.KeyguardManager;
-import android.app.PendingIntent;
-import android.app.Service;
-import android.app.KeyguardManager.KeyguardLock;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.killerban.database.DatabaseHelper;
+import com.killerban.database.GetUpDatabaseHelper;
+import com.killerban.model.ClockParameter;
+import com.killerban.model.GetUpInfo;
+
+@SuppressLint("ShowToast")
 public class AlarmRingActivity extends Activity {
 
 	private Button getupButton; // 起床按钮
@@ -35,27 +40,46 @@ public class AlarmRingActivity extends Activity {
 	private Vibrator vibrator; // 震动
 	private PowerManager.WakeLock wl; // 控制屏幕亮度
 	private KeyguardLock kl; // 控制锁屏幕
+	private KeyguardManager km; // 屏幕锁的管理器
 	private long allTime; // 起床总共花费的时间
 	private ClockParameter param; // 存放闹铃信息的对象
 	public int answer; // 存放问题答案
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+
+		// 先判断今天是星期几，是否响铃的日期，若不是，则不响铃
+		// 由于只响铃一次的闹铃周一到周日都不是响铃日期，所以依然会响铃
+		param = (ClockParameter) getIntent().getExtras().getSerializable(
+				"clock");
+		System.out.println(ClockParameter.getFormatTime(param.getCalendar()
+				.getTimeInMillis()));
+		System.out.println(ClockParameter.getFormatTime(System
+				.currentTimeMillis()));
+		if (!param.noRepeating()) {
+			if (!param.getRepeat()[getWeek() - 1]) {
+				finish();
+				onDestroy();
+				return;
+			}
+		}
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_alarm_ring);
 		getupButton = (Button) findViewById(R.id.getUp);
 		napButton = (Button) findViewById(R.id.nap);
-
 		getupButton.setOnClickListener(listener);
 		napButton.setOnClickListener(listener);
 
-		param = (ClockParameter) getIntent().getExtras().getSerializable(
-				"clock");
-		System.out.println("oncreate" + param.getHour()+" "+param.getMinute());
 		vibrator = (Vibrator) getSystemService(Service.VIBRATOR_SERVICE);
 		unlockScreen(); // 解锁屏幕 点亮屏幕 调大音量
-		// startVibrate(vibrator); // 开始震动
-		// playMusic(); // 开始响铃
+		startVibrate(vibrator); // 开始震动
+		playMusic(); // 开始响铃
+	}
+
+	int getWeek() {
+		Calendar c = Calendar.getInstance();
+		c.setTime(new Date(System.currentTimeMillis()));
+		return c.get(Calendar.DAY_OF_WEEK);
 	}
 
 	View.OnClickListener listener = new View.OnClickListener() { // 监听按键
@@ -87,7 +111,7 @@ public class AlarmRingActivity extends Activity {
 			question = ("   " + a + "*" + b + "=     ");
 			answer = a * b;
 		}
-		showDialog(question, id);	//弹出问题框
+		showDialog(question, id); // 弹出问题框
 	}
 
 	boolean isInteger(String value) { // 判断字符串是否为整数
@@ -116,24 +140,25 @@ public class AlarmRingActivity extends Activity {
 			public void onClick(DialogInterface dialog, int which) {
 				String userAnswer = editText.getText().toString();
 				if (userAnswer == null || userAnswer.isEmpty()) { // 输入的内容为空,弹出提示
-					Toast.makeText(AlarmRingActivity.this, "不能交白卷啊~再来~~", 3000)
-							.show();
+					Toast.makeText(AlarmRingActivity.this, "不能交白卷啊~再来~~",
+							Toast.LENGTH_SHORT).show();
 					showQuestionDialog(id); // 重新出题
 				} else if (!isInteger(userAnswer)) // 输入内容不是整数 ,弹出提示
 				{
 					Toast.makeText(AlarmRingActivity.this, "答案只能是正整数啊~再来~~",
-							3000).show();
+							Toast.LENGTH_SHORT).show();
 					showQuestionDialog(id); // 重新出题
 				} else {
 					if (Integer.parseInt(editText.getText().toString()) == answer) { // 答案正确
 						if (id == R.id.getUp) {
 							// timeCalculate 计算时间的函数 显示起床所用时间
 							Toast.makeText(AlarmRingActivity.this,
-									timeCalculate(), 5000).show();
+									timeCalculate(), Toast.LENGTH_LONG).show();
 							writeGetUpInfo(); // 将起床时间写入数据库
 						} else {
 							Toast.makeText(AlarmRingActivity.this,
-									"好吧，你可以再多睡五分钟~~", 5000).show(); // 贪睡设置，5分钟后重新响铃
+									"好吧，你可以再多睡五分钟~~", Toast.LENGTH_SHORT)
+									.show(); // 贪睡设置，5分钟后重新响铃
 							Intent intent = new Intent(AlarmRingActivity.this,
 									AlarmRingActivity.class);
 							Bundle bundle = new Bundle();
@@ -163,29 +188,17 @@ public class AlarmRingActivity extends Activity {
 		builder.create().show();
 	}
 
+	// 计算起床时间时间
 	String timeCalculate() {
-		Calendar c = Calendar.getInstance(); // 取得闹铃时间
-		c.setTimeInMillis(System.currentTimeMillis());
-		c.set(Calendar.HOUR_OF_DAY, param.getHour());
-		c.set(Calendar.MINUTE, param.getMinute());
-		c.set(Calendar.SECOND, 0);
-		c.set(Calendar.MILLISECOND, 0);
+		Calendar c = param.getCalendar(); // 取得闹铃时间
 		allTime = System.currentTimeMillis() - c.getTimeInMillis(); // 起床时间等于现在时间-闹铃时间
-
-		System.out.println("test time="+allTime);
-		
-		String result = "Tips 本次起床所耗时间：";
-		if (allTime / AlarmManager.INTERVAL_HOUR > 0) // 求出时
-			result += (allTime / AlarmManager.INTERVAL_HOUR + " 小时 ");
-		if (allTime / 1000 / 60 % 60 > 0) // 求出分
-			result += (allTime % AlarmManager.INTERVAL_HOUR / 1000 / 60 + " 分 ");
-		result += (allTime % AlarmManager.INTERVAL_HOUR / 1000 % 60 + " 秒"); // 求出秒
-		System.out.println(result);
-		return result;
+		// 计算allTime的格式化字符串
+		return param.getFormatTime(allTime);
 	}
 
+	// 解手机屏幕锁并点亮屏幕
 	void unlockScreen() {
-		KeyguardManager km = (KeyguardManager) getSystemService(Service.KEYGUARD_SERVICE);
+		km = (KeyguardManager) getSystemService(Service.KEYGUARD_SERVICE);
 		kl = km.newKeyguardLock("unLock");
 		kl.disableKeyguard();
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
@@ -197,21 +210,52 @@ public class AlarmRingActivity extends Activity {
 		wl.acquire();// 点亮屏幕
 	}
 
-	void startVibrate(Vibrator vibrator) { // 震动设置
+	// 震动设置
+	void startVibrate(Vibrator vibrator) {
 		long[] pattern = new long[] { 300, 1000, 1500, 2000 };
 		vibrator.vibrate(pattern, 2);
 	}
 
-	private void playMusic() { // 播放铃声设置
-		mediaPlayer = MediaPlayer.create(this, R.raw.onepiece);
+	// 播放铃声设置
+	private void playMusic() {
+		if (param.getAudiotype().equals("default")) {
+			mediaPlayer = MediaPlayer.create(this, R.raw.drifting);
+		} else {
+			System.out.println("other ring" + param.getAudiotype());
+			mediaPlayer = new MediaPlayer();
+			try {
+				mediaPlayer.setDataSource(param.getAudiotype());
+				mediaPlayer.prepare();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalStateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		mediaPlayer.setLooping(true);
 		mediaPlayer.start();
 	}
 
-	void stopAlarm() // 关闭闹钟 记录起床信息到数据库
-	{
-		// if (mediaPlayer.isPlaying())
-		// mediaPlayer.stop(); // 停止播放
+	// 关闭闹钟响铃， 记录起床信息到数据库
+	void stopAlarm() {
+		// 如果该次响铃为单次响铃 即只响铃一次 没有重复，则更改其状态为关闭
+		if (param.noRepeating()) {
+			param.setIsopen(false);
+			DatabaseHelper db = new DatabaseHelper(this,
+					DatabaseHelper.DATABASE_NAME);
+			db.updateOKColock(param.getId() + "", param);
+		}
+
+		if (mediaPlayer.isPlaying()||mediaPlayer!=null)
+		{
+			mediaPlayer.stop(); // 停止播放
+			mediaPlayer.release();
+		}
 		vibrator.cancel(); // 停止震动
 		wl.release(); // 关闭屏幕
 		kl.reenableKeyguard(); // 锁屏
@@ -227,11 +271,12 @@ public class AlarmRingActivity extends Activity {
 		info.setYear(c.get(Calendar.YEAR));
 		info.setMonth(c.get(Calendar.MONTH) + 1);
 		info.setDay(c.get(Calendar.DATE));
+		info.setHour(param.getHour());
+		info.setMinute(param.getMinute());
 		info.setTime(allTime / 1000);
 		info.setLevel(param.getLevel());
 		info.setSuccess(true);
 		dbHelper.insertGetUp(info);
-		System.out.println("起床数据库已更新~");
 	}
 
 	/*

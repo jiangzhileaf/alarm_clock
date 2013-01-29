@@ -11,17 +11,19 @@
             android:id="@+id/settings"
             style="@style/headbar_button"
             android:layout_alignParentRight="true"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:background="@drawable/bt_settings" />
+            android:background="@drawable/bt_settings"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            />
 
         <Button
             android:id="@+id/addClock"
             style="@style/headbar_button"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
+            android:layout_marginRight="12dp"
             android:layout_toLeftOf="@id/settings"
-            android:background="@drawable/bt_addclock" />
+            android:background="@drawable/bt_addclock" 
+            android:paddingLeft="20dp"
+            android:paddingRight="10dp"/>
 
         <TextView
             android:id="@+id/appName"
@@ -40,8 +42,9 @@
 
         <AnalogClock
             android:id="@+id/analogClock"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginLeft="15dp" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -69,6 +72,20 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
     </LinearLayout>
+
+    <!--
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <ListView
+            android:id="@+id/listview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawSelectorOnTop="true" >
+        </ListView>
+    </LinearLayout>
+    -->
 
     <ScrollView
         android:layout_width="match_parent"

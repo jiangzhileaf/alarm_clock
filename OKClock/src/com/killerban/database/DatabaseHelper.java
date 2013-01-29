@@ -8,9 +8,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
+	private final static String TAG="DatabaseHelper";
+	
 	private static final int VERSION = 1;
 	public final static String DATABASE_NAME = "alarmclock_db";
 	public static final String TABLE_NAME = "okclock";
@@ -46,7 +49,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		// TODO Auto-generated method stub
-		System.out.println("create a DataBase");
 		String partSQL = "";
 		for (int i = 0; i <= 6; i++)
 			// 周一到周末 分别为 repeat0 到 repeat6
@@ -54,16 +56,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		db.execSQL("create table " + TABLE_NAME
 				+ "(id integer primary key autoincrement," + NAME
-				+ " varchar(20) ," + HOUR + " int not null," + MINUTE
+				+ " varchar(255) ," + HOUR + " int not null," + MINUTE
 				+ " int not null," + LEVEL + " int not null," + partSQL
 				+ ISOPEN + " boolean," + ISVIBRATE + " boolean," + ISNEW
-				+ " boolean," + AUDIOTYPE + " varchar(30))");
-		System.out.println("create ok");
+				+ " boolean," + AUDIOTYPE + " varchar(255))");
+		Log.i(TAG, "create okclock database ok");
 		db.execSQL("insert into " + TABLE_NAME
-				+ " values(1,'undefine',8,0,1,1,1,1,1,1,1,1,0,1,0,'default')");
+				+ " values(1,'clock1',8,0,1,1,1,1,1,1,1,1,0,1,0,'default')");
 		db.execSQL("insert into " + TABLE_NAME
-				+ " values(2,'undefine',9,0,1,1,1,1,1,1,1,1,0,1,0,'default')");
-		System.out.println("insert ok");
+				+ " values(2,'clock2',9,0,1,1,1,1,1,1,1,1,0,1,0,'default')");
 	}
 
 	@Override
@@ -85,8 +86,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		values.put(ISOPEN, param.isIsopen());
 		values.put(ISVIBRATE, param.isIsvabrate());
 		values.put(ISNEW, param.isIsnew());
-		values.put(AUDIOTYPE, "default");
-		System.out.println("insert Database");
+		values.put(AUDIOTYPE, param.getAudiotype());
 		long result = db.insert(TABLE_NAME, null, values);
 		db.close();
 		return result;
@@ -111,11 +111,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public void deleteOKColock(String id) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		String where = ID + "=?";
-		String[] whereValues = { id };
-		System.out.println("deleteSQL : delete from" + TABLE_NAME + " " + where
-				+ "=" + id);
-		int i=db.delete(TABLE_NAME, where, whereValues);
-		System.out.println("delete result"+i);
+		 String[] whereValues = { id };
+		db.delete(TABLE_NAME, where, whereValues);
 		db.close();
 	}
 
@@ -134,7 +131,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		values.put(ISOPEN, param.isIsopen());
 		values.put(ISVIBRATE, param.isIsvabrate());
 		values.put(ISNEW, param.isIsnew());
-		values.put(AUDIOTYPE, "default");
+		values.put(AUDIOTYPE, param.getAudiotype());
 
 		int result = db.update(TABLE_NAME, values, where, whereValues);
 		db.close();

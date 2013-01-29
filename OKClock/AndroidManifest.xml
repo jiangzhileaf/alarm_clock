@@ -2,11 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.killerban.okclock"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="1.2.0" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-sdk
         android:minSdkVersion="10"
@@ -16,7 +19,10 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
+        android:screenOrientation="portrait"
         android:theme="@style/AppTheme" >
+
+        <!-- okClock package -->
         <activity
             android:name="com.killerban.okclock.MainActivity"
             android:label="@string/app_name" >
@@ -28,16 +34,32 @@
         </activity>
         <activity android:name="com.killerban.okclock.AlarmRingActivity" >
         </activity>
-        <activity android:name="com.killerban.okclock.SettingsActivity" >
+
+        <!-- editClock package -->
+        <activity android:name="com.killerban.editclock.SelectMusicActivity" >
         </activity>
-        <activity android:name="com.killerban.okclock.EditClockActivity" >
+        <activity android:name="com.killerban.editclock.EditClockActivity" >
         </activity>
-        <activity android:name="com.killerban.okclock.UnlockActivity" >
+        <activity
+            android:name="com.killerban.editclock.WeekRepeatActivity"
+            android:label="@string/title_activity_unlock"
+            android:theme="@style/DailogTheme" >
         </activity>
-        <activity android:name="com.killerban.okclock.WeekRepeatActivity" >
+
+        <!-- settings -->
+        <activity android:name="com.killerban.settings.SettingsActivity" >
         </activity>
-        <activity android:name="com.killerban.okclock.DataShowActivity" >
+        <activity android:name="com.killerban.settings.DataShowActivity" >
         </activity>
+        <activity
+            android:name="com.killerban.settings.WebTranslateActivity"
+            android:theme="@style/DailogTheme" >
+        </activity>
+
+        <service android:name="com.killerban.settings.UpgradeService" >
+        </service>
+        <service android:name="com.killerban.web.SentDataService" >
+        </service>
     </application>
 
 </manifest>

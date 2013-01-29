@@ -8,6 +8,12 @@ public class User {
 	public User()
 	{}
 
+	public User(String userid,String password ,String username)
+	{
+		this.userid=userid;
+		this.password=password;
+		this.username=username;
+	}
 	public String getUserid() {
 		return userid;
 	}

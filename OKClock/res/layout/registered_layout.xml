@@ -1,71 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/registed_dialog"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="#ffffffff"
-    android:orientation="vertical" >
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
-    <TextView
-        android:id="@+id/userid_text"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/registed_dialog"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#00000000"
-        android:text="@string/userid" />
+        android:background="#ffffffff"
+        android:orientation="vertical" >
 
-    <EditText
-        android:id="@+id/userid_eidt"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:minWidth="50dip" />
+        <TextView
+            android:id="@+id/userid_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+            android:text="@string/userid" />
 
-    <TextView
-        android:id="@+id/password_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#00000000"
-        android:text="@string/password" />
+        <EditText
+            android:id="@+id/userid_eidt"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:minWidth="50dip" />
 
-    <EditText
-        android:id="@+id/password_edit"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:minWidth="50dip" />
+        <TextView
+            android:id="@+id/password_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+            android:text="@string/password" />
 
-    <TextView
-        android:id="@+id/password_again_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#00000000"
-        android:text="@string/password_again" />
+        <EditText
+            android:id="@+id/password_edit"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:minWidth="50dip" />
 
-    <EditText
-        android:id="@+id/password_again_edit"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:minWidth="50dip" />
+        <TextView
+            android:id="@+id/password_again_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+            android:text="@string/password_again" />
 
-    <TextView
-        android:id="@+id/username_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#00000000"
-        android:text="@string/username" />
+        <EditText
+            android:id="@+id/password_again_edit"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:minWidth="50dip" />
 
-    <EditText
-        android:id="@+id/username_edit"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:minWidth="50dip" />
+        <TextView
+            android:id="@+id/username_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+            android:text="@string/username" />
 
-    <Button
-        android:id="@+id/check_info"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:minWidth="50dip"
-        android:text="@string/check" >
-    </Button>
+        <EditText
+            android:id="@+id/username_edit"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:minWidth="50dip" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/check_info"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:minWidth="50dip"
+            android:text="@string/check" >
+        </Button>
+    </LinearLayout>
+
+</ScrollView>

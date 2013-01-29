@@ -6,11 +6,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.killerban.model.User;
 
 public class UserDatabaseHelper extends SQLiteOpenHelper {
 
+	private final static String TAG="UserDatabaseHelper";
+	
 	private static final int VERSION = 1;
 	public final static String DATABASE_NAME = "user_db";
 	public static final String TABLE_NAME = "user";
@@ -39,7 +42,7 @@ public class UserDatabaseHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		// TODO Auto-generated method stub
-		System.out.println("create a user DataBase");
+		Log.i(TAG,"create a user DataBase");
 		String sql = "drop table if exists " + TABLE_NAME;
 		db.execSQL(sql);
 		db.execSQL("create table " + TABLE_NAME
@@ -58,9 +61,8 @@ public class UserDatabaseHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
 		values.put(USERID, info.getUserid());
-		values.put(PASSWORD, info.getUsername());
+		values.put(PASSWORD, info.getPassword());
 		values.put(USERNAME, info.getUsername());
-		System.out.println("insert user table");
 		long result = db.insert(TABLE_NAME, null, values);
 		db.close();
 		return result;
@@ -96,7 +98,7 @@ public class UserDatabaseHelper extends SQLiteOpenHelper {
 		String[] whereValues = { id };
 		ContentValues values = new ContentValues();
 		values.put(USERID, info.getUserid());
-		values.put(PASSWORD, info.getUsername());
+		values.put(PASSWORD, info.getPassword());
 		values.put(USERNAME, info.getUsername());
 
 		int result = db.update(TABLE_NAME, values, where, whereValues);

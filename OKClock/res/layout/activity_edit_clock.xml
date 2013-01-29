@@ -13,7 +13,7 @@
             style="@style/headbar_button"
             android:layout_alignParentRight="true"
             android:layout_marginRight="5dp"
-            android:background="@drawable/bt_headbar_bg"
+            android:background="@drawable/bt_delete"
             android:text="@string/delete"
             android:textSize="12sp" />
 
@@ -77,7 +77,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="2dp"
         android:layout_marginRight="2dp"
-        android:background="@drawable/bt_delete"
+        android:background="@drawable/bt_save"
         android:text="@string/save" />
 
 </RelativeLayout>
