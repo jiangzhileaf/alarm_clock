@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- 登陆框布局 -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:id="@+id/login_dialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffffff"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/login_userid_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+            android:text="@string/userid" />
+
+        <EditText
+            android:id="@+id/login_userid_eidt"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:minWidth="50dip" />
+
+        <TextView
+            android:id="@+id/login_password_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+            android:text="@string/password" />
+
+        <EditText
+            android:id="@+id/login_password_edit"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:minWidth="50dip" />
+    </LinearLayout>
+
+</ScrollView>

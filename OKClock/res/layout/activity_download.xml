@@ -1,3 +1,5 @@
+<!-- 下载软件完成后的notification布局 -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"

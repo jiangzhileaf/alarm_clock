@@ -110,7 +110,7 @@ public class EditClockActivity extends Activity {
 			case R.id.clock_tag: // 修改闹钟名称
 				showClockTagDialog();
 				break;
-			case R.id.clock_sound:	//选择闹钟铃声
+			case R.id.clock_sound: // 选择闹钟铃声
 				selectMusic();
 				break;
 			case R.id.clock_repeat: // 设置闹钟重复日期
@@ -131,10 +131,9 @@ public class EditClockActivity extends Activity {
 		}
 	};
 
-	//选择闹钟铃声的Dialog,若选择默认 则设置为软件默认铃声
-	//选择自定义的话，弹出SD卡的文件列表（调用SelectMusicActivity），从中选择符合格式的作为铃声
-	void selectMusic()
-	{
+	// 选择闹钟铃声的Dialog,若选择默认 则设置为软件默认铃声
+	// 选择自定义的话，弹出SD卡的文件列表（调用SelectMusicActivity），从中选择符合格式的作为铃声
+	void selectMusic() {
 		int index = param.getAudiotype().equals("default") ? 0 : 1;
 		new AlertDialog.Builder(this)
 				.setTitle("  选择闹铃铃声   ")
@@ -143,12 +142,10 @@ public class EditClockActivity extends Activity {
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,
 									int which) {
-								if (which == 0)
-								{
+								if (which == 0) {
 									param.setAudiotype("default");
 									musicButton.setText("铃声: 默认");
-								}
-								else {
+								} else {
 									Intent intent = new Intent(
 											EditClockActivity.this,
 											SelectMusicActivity.class);
@@ -158,7 +155,7 @@ public class EditClockActivity extends Activity {
 							}
 						}).setNegativeButton("取消", null).show();
 	}
-	
+
 	// 删除闹钟的提示框 点击确认则删除闹钟
 	void showDeleteDialog() {
 		new AlertDialog.Builder(this).setTitle("确定要删除？")
@@ -167,16 +164,16 @@ public class EditClockActivity extends Activity {
 						// TODO Auto-generated method stub
 						Toast.makeText(EditClockActivity.this, "闹钟已删除...",
 								Toast.LENGTH_LONG).show();
-						// 若闹钟不是新建的闹钟 即已经在数据库 则删除
+						// 若闹钟不是新建的闹钟 即已经在数据库 则返回删除操作
 						if (!param.isIsnew()) {
-							DatabaseHelper db = new DatabaseHelper(
-									EditClockActivity.this,
-									DatabaseHelper.DATABASE_NAME);
-							db.deleteOKColock(String.valueOf(param.getId()));
+							
+							// false代表删除操作，true代表存储操作
+							callBack(false);
+							finish();
+						} else {		//若是新闹钟，无需回调，直接结束
+							finish();
+							return;
 						}
-						// false代表删除操作，true代表存储操作
-						callBack(false);
-						finish();
 					}
 				}).setNegativeButton("取消", null).show();
 	}
@@ -200,11 +197,12 @@ public class EditClockActivity extends Activity {
 		}
 		if (requestCode == REQUEST_CODE
 				&& resultCode == SelectMusicActivity.RESULT_CODE) {
-			
+
 			String path = data.getExtras().getString("path");
 			param.setAudiotype(path);
 			String[] name = path.split("/");
-			System.out.println("return ring" + path +" name " +name[name.length-1]);
+			System.out.println("return ring" + path + " name "
+					+ name[name.length - 1]);
 			musicButton.setText("铃声:" + name[name.length - 1]);
 		}
 	}

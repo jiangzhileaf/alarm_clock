@@ -20,6 +20,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.Vibrator;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -63,6 +64,7 @@ public class AlarmRingActivity extends Activity {
 				return;
 			}
 		}
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_alarm_ring);
 		getupButton = (Button) findViewById(R.id.getUp);
@@ -70,9 +72,12 @@ public class AlarmRingActivity extends Activity {
 		getupButton.setOnClickListener(listener);
 		napButton.setOnClickListener(listener);
 
-		vibrator = (Vibrator) getSystemService(Service.VIBRATOR_SERVICE);
 		unlockScreen(); // 解锁屏幕 点亮屏幕 调大音量
-		startVibrate(vibrator); // 开始震动
+		// 该闹钟是否开启震动
+		if (param.isIsvabrate()) {
+			vibrator = (Vibrator) getSystemService(Service.VIBRATOR_SERVICE);
+			startVibrate(vibrator); // 开始震动
+		}
 		playMusic(); // 开始响铃
 	}
 
@@ -101,8 +106,8 @@ public class AlarmRingActivity extends Activity {
 		String question;
 		if (param.getLevel() == 1 && id == R.id.getUp) // 等级为1并且id被视为起床按钮激发 加法
 		{
-			int a = (int) (Math.random() * 100) + 1;
-			int b = (int) (Math.random() * 100) + 1;
+			int a = (int) (Math.random() * 1000) + 1;
+			int b = (int) (Math.random() * 1000) + 1;
 			question = ("   " + a + "+" + b + "=     ");
 			answer = a + b;
 		} else { // 乘法
@@ -251,12 +256,13 @@ public class AlarmRingActivity extends Activity {
 			db.updateOKColock(param.getId() + "", param);
 		}
 
-		if (mediaPlayer.isPlaying()||mediaPlayer!=null)
-		{
+		if (mediaPlayer.isPlaying() || mediaPlayer != null) {
 			mediaPlayer.stop(); // 停止播放
 			mediaPlayer.release();
 		}
-		vibrator.cancel(); // 停止震动
+		if (param.isIsvabrate()) {
+			vibrator.cancel(); // 停止震动
+		}
 		wl.release(); // 关闭屏幕
 		kl.reenableKeyguard(); // 锁屏
 		finish(); // 结束程序
@@ -279,17 +285,25 @@ public class AlarmRingActivity extends Activity {
 		dbHelper.insertGetUp(info);
 	}
 
-	/*
-	 * public boolean onKeyDown(int keyCode, KeyEvent event) { // 屏蔽实体键 switch
-	 * (keyCode) { case KeyEvent.KEYCODE_BACK: return true; case
-	 * KeyEvent.KEYCODE_CALL: return true; case KeyEvent.KEYCODE_VOLUME_DOWN:
-	 * return true; case KeyEvent.KEYCODE_HOME: return true; case
-	 * KeyEvent.KEYCODE_POWER: return true; } return super.onKeyDown(keyCode,
-	 * event); }
-	 * 
-	 * public void onAttachedToWindow() { // 屏蔽键 this.getWindow().setType(
-	 * WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
-	 * super.onAttachedToWindow(); }
-	 */
+	public boolean onKeyDown(int keyCode, KeyEvent event) { // 屏蔽实体键
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_BACK:
+			return true;
+		case KeyEvent.KEYCODE_CALL:
+			return true;
+		case KeyEvent.KEYCODE_VOLUME_DOWN:
+			return true;
+		case KeyEvent.KEYCODE_HOME:
+			return true;
+		case KeyEvent.KEYCODE_POWER:
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 
+	public void onAttachedToWindow() { // 屏蔽键
+		this.getWindow().setType(
+				WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
+		super.onAttachedToWindow();
+	}
 }

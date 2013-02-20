@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>  
+
+<!-- 
+	主界面闹钟开关前景图 
+-->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">  
     <item android:state_checked="false" android:drawable="@drawable/toggle_off" />  
     <item android:state_checked="true"  android:drawable="@drawable/toggle_on" />  

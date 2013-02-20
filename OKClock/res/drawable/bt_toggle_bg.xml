@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- 
+	主界面闹钟开关按钮背景图
+	把背景图分层两层：一层背景，一层前景为开关显示状态 
+-->
+
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item android:id="@+android:id/background">

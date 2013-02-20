@@ -16,7 +16,7 @@
     <string name="ring_time">响铃时间</string>
     <string name="clock_repeat">响铃周期</string>
     <string name="clock_model">自虐模式</string>
-    <string name="clock_sound">铃声:默认(待完善)</string>
+    <string name="clock_sound">铃声:默认</string>
     <string name="vibrate">震动:</string>
 
     <!-- 设置界面 -->
@@ -24,12 +24,13 @@
     <string name="feedback">反馈建议</string>
     <string name="statistics">统计数据</string>
     <string name="upload">上传数据</string>
-    <string name="rankList">排行榜</string>
-    <string name="update">软件更新（待完善）</string>
+    <string name="rankList">起床时间 PK</string>
+    <string name="update">软件更新</string>
     <string name="volumeup">增大音量</string>
     <string name="volumedown">降低音量</string>
     <string name="login">登 录</string>
-
+	<string name="register">注 册</string>
+	
     
     <!-- 闹钟响界面 -->
     <string name="title_activity_alarm_ring">UPUPUP</string>

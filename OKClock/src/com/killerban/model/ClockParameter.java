@@ -35,6 +35,8 @@ public class ClockParameter implements Serializable {
 
 	// 将数据库的查询结果地赋值到该类对应的属性
 	public void translateFromDatabase(Cursor cursor) {
+		this.setId(Integer.parseInt(cursor.getString(cursor
+				.getColumnIndex(DatabaseHelper.ID))));
 		this.setHour(Integer.parseInt(cursor.getString(cursor
 				.getColumnIndex(DatabaseHelper.HOUR))));
 		this.setMinute(Integer.parseInt(cursor.getString(cursor
@@ -66,6 +68,17 @@ public class ClockParameter implements Serializable {
 		}
 	}
 
+	//因为当该对象传入至数据库时,其存储于数据库时Id会根据数据库数据的多少而变
+	//所以需要更新其Id,令其与其在数据库的值一致
+	public void updateIdFromDB(DatabaseHelper dbHelper)
+	{
+		Cursor cursor = dbHelper.selectOKColock();
+		cursor.moveToLast();
+		int id=Integer.parseInt(cursor.getString(cursor.getColumnIndex(DatabaseHelper.ID)));
+		this.setId(id);
+		cursor.close();
+	}
+	
 	// 判断该闹钟是否只响铃一次，即无重复
 	public boolean noRepeating() {
 		boolean flag = true;

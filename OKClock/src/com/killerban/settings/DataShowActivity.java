@@ -8,7 +8,6 @@ import android.widget.ArrayAdapter;
 import com.killerban.database.GetUpDatabaseHelper;
 import com.killerban.model.ClockParameter;
 import com.killerban.okclock.R;
-import com.killerban.okclock.R.layout;
 
 public class DataShowActivity extends ListActivity {
 
@@ -55,7 +54,7 @@ public class DataShowActivity extends ListActivity {
 			s += "’ı‘˙ ±º‰:";
 			long time = Long.parseLong(cursor.getString(cursor
 					.getColumnIndex(GetUpDatabaseHelper.TIME)));
-			s += ClockParameter.getFormatTime(time * 1000)+"\n";
+			s += ClockParameter.getFormatTime(time * 1000);
 			info[i++] = s;
 		}
 		cursor.close();

@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- 
+	编辑闹钟界面 删除闹钟按钮背景图 
+-->
+
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:state_pressed="true"><shape android:shape="rectangle">

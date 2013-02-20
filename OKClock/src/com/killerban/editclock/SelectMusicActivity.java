@@ -33,7 +33,16 @@ public class SelectMusicActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_selectmusic);
 		tv = (TextView) this.findViewById(R.id.textview);
-		this.getFileDir(rootPath);// 获取rootPath目录下的文件.
+
+		//sdcard不存在
+		if (!android.os.Environment.getExternalStorageState().equals(
+				android.os.Environment.MEDIA_MOUNTED))
+		{
+			Toast.makeText(this, "sdcard 不存在，无法读取文件~",Toast.LENGTH_LONG).show();
+			finish();
+		}
+		else
+			this.getFileDir(rootPath);// 获取rootPath目录下的文件.
 	}
 
 	public void getFileDir(String filePath) {
@@ -81,7 +90,8 @@ public class SelectMusicActivity extends ListActivity {
 			if (file.getName().endsWith(".mp3"))
 				callBack(path);
 			else {
-				Toast.makeText(this, "暂时不支持选择该类型音乐作为闹铃", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, "暂时不支持选择该类型音乐作为闹铃", Toast.LENGTH_SHORT)
+						.show();
 			}
 		}
 	}
@@ -102,15 +112,15 @@ public class SelectMusicActivity extends ListActivity {
 			if (!f.isDirectory()) // 不是文件夹 ，获取其路径
 			{
 				int i = temp.lastIndexOf("/");
-				if(i==0)
-					i=1;
+				if (i == 0)
+					i = 1;
 				temp = temp.substring(0, i);
 			}
-			System.out.println("temp " +temp);
+			System.out.println("temp " + temp);
 			if (!temp.equals(rootPath)) // 不是根目录
 			{
 				File f2 = new File(temp);
-				path=f2.getParent();			//改变目录路径为其父目录路径
+				path = f2.getParent(); // 改变目录路径为其父目录路径
 				this.getFileDir(f2.getParent()); // 返回父目录
 				return true;
 			} else // 根目录，退出

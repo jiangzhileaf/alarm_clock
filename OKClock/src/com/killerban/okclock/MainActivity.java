@@ -59,7 +59,6 @@ public class MainActivity extends Activity {
 
 		public EditButtonOnclickedListener(ClockParameter param) {
 			this.param = param;
-			System.out.println("set clock "+ClockParameter.getFormatTime(param.getCalendar().getTimeInMillis()));
 		}
 
 		@Override
@@ -172,7 +171,7 @@ public class MainActivity extends Activity {
 			// 若返回的是删除闹钟的操作则 删除对应的Button
 			// 否则 判断返回的闹钟是否为新建闹钟 ：若是，则插入到数据库 ；不是，则更新其在数据库的信息(因为有可能有修改)
 			if (!data.getExtras().getBoolean("save")) {
-				// 删除对应的闹钟控件
+				// 删除对应的闹钟控件,以及对应的数据库
 				modifyClockButton(param, "delete");
 			} else {
 				if (param.isIsnew()) {
@@ -180,13 +179,17 @@ public class MainActivity extends Activity {
 					param.setIsopen(true);
 					dbHelper.insertOKColock(param);
 
+					//此时虽然数据库中该闹钟Id已经自动生成，但是该闹钟变量param中的id为0
+					//需要更新为数据库中的id
+					param.updateIdFromDB(dbHelper);
+					
 					// 为新闹钟绑定Button 插入到layoutList中，并提示距离响铃还有长时间
 					clockList.add(param);
 					initWidget(param);
 
 				} else {
 					param.setIsopen(true);
-					dbHelper.updateOKColock(param.getId() + "", param);
+					dbHelper.updateOKColock(String.valueOf(param.getId()), param);
 					// 更新闹钟Button绑定的数据
 					modifyClockButton(param, "update");
 				}
@@ -213,13 +216,16 @@ public class MainActivity extends Activity {
 			PendingIntent pi = PendingIntent.getActivity(MainActivity.this, layoutList.get(index).getIdOfClock(),
 					intent, 0);
 			am.cancel(pi);
+			DatabaseHelper db = new DatabaseHelper(
+					MainActivity.this,
+					DatabaseHelper.DATABASE_NAME);
+			db.deleteOKColock(String.valueOf(param.getId()));
 			mainLayout.removeView(layoutList.get(index));
 			layoutList.remove(index);
 			clockList.remove(index);
 		}
 		// operate 为 update 进行更新操作
 		if (operate.equals("update")) {
-			System.out.println(param.isIsopen() + " Open ");
 			clockList.set(index, param);
 			// 更新显示内容
 			setButtonText(param, layoutList.get(index));
@@ -260,8 +266,6 @@ public class MainActivity extends Activity {
 			param.translateFromDatabase(cursor);
 			clockList.add(param); // 添加到List
 
-			System.out.println(ClockParameter.getFormatTime((param.getRecentlyAlarmTime()-System.currentTimeMillis())));
-			
 			// 初始化闹钟按钮
 			initWidget(param);
 		}

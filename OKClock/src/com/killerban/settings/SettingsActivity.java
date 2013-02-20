@@ -1,6 +1,6 @@
 package com.killerban.settings;
 
-import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -14,9 +14,11 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.media.AudioManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -37,7 +39,6 @@ import com.killerban.web.SentDataService;
  */
 public class SettingsActivity extends Activity {
 	private final static String TAG = "SettingActivity";
-	private final static int REQUEST_CODE = 1;
 
 	private Button volumeUpButton; // 预设闹铃音量，增高
 	private Button volumeDownButton; // 预设闹铃音量，降低
@@ -45,9 +46,12 @@ public class SettingsActivity extends Activity {
 	private Button uploadButton; // 上传数据
 	private Button rankListButton; // 排行榜 最近一次起床时间的排行榜
 	private Button freebackButton; // 意见反馈
+	private Button registerButton; // 注册
 	private Button loginButton; // 登录
-	private Button upgradeButton;	//检测更新
-	private String[] registeredInfo = new String[] { "", "", "", "" };
+	private Button upgradeButton; // 检测更新
+	private String[] registeredInfo = new String[] { "", "", "", "" }; // 注册信息
+	private ArrayList<User> list = new ArrayList<User>();
+	private String[] session = new String[] { "", "" }; // 当前登录的账号信息,分别为账号和密码
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +64,8 @@ public class SettingsActivity extends Activity {
 		uploadButton = (Button) findViewById(R.id.upload);
 		freebackButton = (Button) findViewById(R.id.feedback);
 		loginButton = (Button) findViewById(R.id.login);
-		upgradeButton = (Button)findViewById(R.id.update);
+		registerButton = (Button) findViewById(R.id.register);
+		upgradeButton = (Button) findViewById(R.id.update);
 
 		showGetUpDataButton.setOnClickListener(listener);
 		rankListButton.setOnClickListener(listener);
@@ -70,10 +75,30 @@ public class SettingsActivity extends Activity {
 		volumeDownButton.setOnClickListener(listener);
 		loginButton.setOnClickListener(listener);
 		upgradeButton.setOnClickListener(listener);
+		registerButton.setOnClickListener(listener);
+
+		// 因为此Activity需要经常读取数据库，所以先将其读取至Arraylist中
+		getUserDatabaseInfo();
 	}
 
-	// 各个按钮的监听器 对于需要连接网络才能用的功能，先调用网络检测的Activity
-	// 连接成功后再调用对应的功能
+	// 获取数据库信息，保存至Arraylist中，为以后方便读取
+	public void getUserDatabaseInfo() {
+
+		UserDatabaseHelper db = new UserDatabaseHelper(SettingsActivity.this,
+				UserDatabaseHelper.DATABASE_NAME);
+		Cursor cursor = db.selectUser();
+		User user = null;
+		while (cursor.moveToNext()) {
+			user = new User();
+			// 调用User对象的方法，将数据库信息转赋值给对应的对象属性
+			user.translateFromDB(cursor);
+			list.add(user);
+		}
+		cursor.close();
+		db.close();
+	}
+
+	// 各个按钮的监听器
 	View.OnClickListener listener = new View.OnClickListener() {
 		public void onClick(View v) {
 			AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -93,108 +118,76 @@ public class SettingsActivity extends Activity {
 						DataShowActivity.class);
 				startActivity(intent);
 				break;
-			case R.id.upload: // 上传数据
-				Log.i(TAG, "上传数据");
-				sentWebIntent(R.id.upload);		
+			case R.id.upload: // 上传起床时间数据
+				uploadData();
 				break;
-			case R.id.rankList: // PK
-				sentWebIntent(R.id.rankList);
+			case R.id.login: // 登录
+				showLoginDialog();
+				break;
+			case R.id.register: // 注册
+				showRegisteredDiolag();
 				break;
 			case R.id.feedback: // 意见反馈
-				sentWebIntent(R.id.feedback);
+				showFeedbackDialog();
 				break;
-			case R.id.login:
-				sentWebIntent(R.id.login); // 登录
+			case R.id.rankList: // 起床时间pk
+				pkWithOther();
 				break;
-			case R.id.update:		//检测更新
-				sentWebIntent(R.id.update);
+			case R.id.update: // 更新软件
+				upDateSoftware();
 				break;
 			}
 		}
 	};
 
-	// 测试网络连接状态
-	// 在测试完后执行相应的操作，根据操作的Id而定
-	public void sentWebIntent(int id) {
-		Intent intent = new Intent(SettingsActivity.this,
-				WebTranslateActivity.class);
-		intent.putExtra("id", id);
-		startActivityForResult(intent, REQUEST_CODE);
-	}
+	// 根据版本号判断是否为最新版，若是则不用下载，否，则启动更新服务,从后台下载
+	void upDateSoftware() {
+		String url = "http://172.16.41.161/Mobile/getNewestVersion";
+		String param = "";
+		String appVersion = "";
 
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == REQUEST_CODE
-				&& resultCode == WebTranslateActivity.RESULT_CODE) {
-			if (data.getExtras().getInt("status") == 1) {
-				
-				doOperation(data.getExtras().getInt("id"));
-			} else
-				Toast.makeText(SettingsActivity.this, "未检测到可用网络，请先联网~",
-						Toast.LENGTH_SHORT).show();
-		}
-	}
+		LinkToWeb task = new LinkToWeb();
+		String newVersion = task.doInBackground(url, param);
 
-	// 测试网络状态可用时，执行以下操作
-	public void doOperation(int id) {
-		switch (id) {
-		case R.id.upload:
-			System.out.println("upload");
-			uploadData();
-			break;
-		case R.id.login:
-			System.out.println("login");
-			showLoginDialog();
-			break;
-		case R.id.feedback:
-			System.out.println("feedback");
-			showFeedbackDialog();
-			break;
-		case R.id.rankList:
-			pkWithOther();
-			break;
-		case R.id.update:
-			upDateSoftware();
-			break;
-		}
-	}
-	
-	//根据版本号判断是否为最新版，若是则不用下载，否，则启动更新服务,从后台下载
-	void upDateSoftware()
-	{
-		String url="http://172.16.41.161/Mobile/getNewestVersion";
-		String param="";
-		String appVersion="";
-		String newVersion=GetPostUtil.sendPost(url, param);
 		PackageManager manager = this.getPackageManager();
 		try {
-		        PackageInfo info = manager.getPackageInfo(this.getPackageName(), 0);
-		        appVersion = info.versionName; // 版本名，versionCode同理
+			PackageInfo info = manager.getPackageInfo(this.getPackageName(), 0);
+			appVersion = info.versionName; // 版本名，versionCode同理
 		} catch (NameNotFoundException e) {
-		        e.printStackTrace();
+			e.printStackTrace();
 		}
-		
-		if(newVersion.equals(appVersion))	//版本号相同
-		{
-			Toast.makeText(SettingsActivity.this, "你当前使用的是最新版本，无需更新~", Toast.LENGTH_SHORT).show();
-		}
-		else
-		{
-			AlertDialog.Builder builder = new Builder(SettingsActivity.this);
-			builder.setTitle("你当前版本为 "+appVersion+" ,最新版本为 "+newVersion+",是否下载最新版？");
-			builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					// 发送信息到服务器
-					Intent intent = new Intent(SettingsActivity.this,UpgradeService.class);
-					startService(intent);
-					Toast.makeText(SettingsActivity.this, "已切换至后台下载", Toast.LENGTH_SHORT).show();
-					dialog.dismiss();
-				}
-			});
-			builder.setNegativeButton("取消", null);
-			builder.create().show();
-			
+		// 能连接到网络，获取得到版本号
+		if (!newVersion.equals("false") && !newVersion.equals("出错了")) {
+			if (newVersion.equals(appVersion)) // 版本号相同
+			{
+				Toast.makeText(SettingsActivity.this, "你当前使用的是最新版本，无需更新~",
+						Toast.LENGTH_SHORT).show();
+			} else {
+				AlertDialog.Builder builder = new Builder(SettingsActivity.this);
+				builder.setTitle("你当前版本为 " + appVersion + " ,最新版本为 "
+						+ newVersion + ",是否下载最新版？");
+				builder.setPositiveButton("确认",
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								// 发送信息到服务器
+								Intent intent = new Intent(
+										SettingsActivity.this,
+										UpgradeService.class);
+								startService(intent);
+								Toast.makeText(SettingsActivity.this,
+										"已切换至后台下载,完成后会弹出提醒~",
+										Toast.LENGTH_SHORT).show();
+								dialog.dismiss();
+							}
+						});
+				builder.setNegativeButton("取消", null);
+				builder.create().show();
+			}
+		} else {
+			Toast.makeText(SettingsActivity.this, "出错了", Toast.LENGTH_SHORT)
+					.show();
 		}
 	}
 
@@ -221,7 +214,9 @@ public class SettingsActivity extends Activity {
 	void sentFeedback(String info) {
 		String url = "http://172.16.41.161/Mobile/receiveAdvice";
 		String param = "advice=" + info;
-		String response = GetPostUtil.sendPost(url, param); // 发送数据至服务器
+
+		LinkToWeb task = new LinkToWeb();
+		String response = task.doInBackground(url, param); // 发送数据至服务器
 															// 并将返回信息传入至response中
 		showMessageDiolog(response);
 	}
@@ -240,7 +235,9 @@ public class SettingsActivity extends Activity {
 			// 向服务器发送请求，并将返回信息传入至response中
 			String url = "http://172.16.41.161/Mobile/getOrder";
 			String param = "duration=" + time;
-			String response = GetPostUtil.sendPost(url, param);
+
+			LinkToWeb task = new LinkToWeb();
+			String response = task.doInBackground(url, param);
 
 			showMessageDiolog(response);
 		} else // 数据库为空，无法
@@ -251,107 +248,130 @@ public class SettingsActivity extends Activity {
 		db.close();
 	}
 
-	// 发送用户的起床信息到服务器，在发送之前先判断用户是否已经登录 否则弹出注册新用户的对话框
-	// 若已经注册了账号后 登录 判断密码是否正确 是则可以发送用户的起床信息到服务器 ，否，则弹出登录框
+	// 发送用户的起床信息到服务器，在发送之前搜索数据库是否存在用户账号，
+	// 若存在，则选择已经登录的账号登录，若登录成功，后台上传数据，失败则弹出提示
 	void uploadData() {
-		UserDatabaseHelper db = new UserDatabaseHelper(SettingsActivity.this,
-				UserDatabaseHelper.DATABASE_NAME);
-		Cursor cursor = db.selectUser();
-		if (cursor.getCount() == 0) // 无用户信息 先注册
+		if (list.size() == 0) // 无用户信息 先注册
 		{
-
 			Toast.makeText(SettingsActivity.this, "你还没注册，请先注册吧~",
 					Toast.LENGTH_SHORT).show();
-			cursor.close();
-			db.close();
-			showRegisteredDiolag();
 		} else {
-			cursor.moveToLast();
-			String loginId = cursor.getString(cursor
-					.getColumnIndex(UserDatabaseHelper.USERID));
-			String loginPSW = cursor.getString(cursor
-					.getColumnIndex(UserDatabaseHelper.PASSWORD));
-			cursor.close();
-			db.close();
-			if (login(loginId, loginPSW)) // 登录成功 用户名和密码匹配
-			{
-				showMessageDiolog("OK，后台正在为你上传数据到服务器~~");
-				Intent intent = new Intent(this, SentDataService.class);
-				startService(intent);
+			if (session[0].equals("")) {
+				Toast.makeText(SettingsActivity.this, "你还没有登录，请先登录~",
+						Toast.LENGTH_SHORT).show();
 			} else {
-				showLoginDialog(); // 跳至登录Dialog
+				String loginId = session[0];
+				String loginPSW = session[1];
+				if (login(loginId, loginPSW)) // 登录成功 用户名和密码匹配
+				{
+					showMessageDiolog("OK，后台正在为你上传数据到服务器~~");
+					Intent intent = new Intent(this, SentDataService.class);
+					intent.putExtra("id", loginId);
+					intent.putExtra("password", loginPSW);
+					startService(intent);
+				} else {
+					Toast.makeText(SettingsActivity.this, "登录信息有错误，请重新登录~",
+							Toast.LENGTH_SHORT).show();
+				}
 			}
 		}
-
 	}
 
-	// 登录的对话框
+	// 登录的对话框 先在数据库取得首个账号，自动填充
 	void showLoginDialog() {
 
-		final UserDatabaseHelper db = new UserDatabaseHelper(
-				SettingsActivity.this, UserDatabaseHelper.DATABASE_NAME);
-		final Cursor cursor = db.selectUser();
-		if (cursor.getCount() == 0) // 未注册 跳到注册页面
-		{
-			cursor.close();
-			db.close();
-			showRegisteredDiolag();
-		} else {
-			cursor.moveToLast(); // 已经注册，取得数据库的用户信息
-			final String loginId = cursor.getString(cursor
-					.getColumnIndex(UserDatabaseHelper.USERID));
-			final String loginPSW = cursor.getString(cursor
-					.getColumnIndex(UserDatabaseHelper.PASSWORD));
-			final String userName = cursor.getString(cursor
-					.getColumnIndex(UserDatabaseHelper.USERNAME));
+		LayoutInflater inflater = getLayoutInflater();
+		View layout = inflater.inflate(R.layout.login_layout,
+				(ViewGroup) findViewById(R.id.login_dialog));
+		final EditText userIdET = (EditText) layout
+				.findViewById(R.id.login_userid_eidt);
+		final EditText passwordET = (EditText) layout
+				.findViewById(R.id.login_password_edit);
+		// 设置输入字符为密码类型 即输入后会变*
+		passwordET.setInputType(InputType.TYPE_CLASS_TEXT
+				| InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
-			final EditText passwordET = new EditText(this);
-			// 设置输入字符为密码类型 即输入后会变*
-			passwordET.setInputType(InputType.TYPE_CLASS_TEXT
-					| InputType.TYPE_TEXT_VARIATION_PASSWORD);
-			passwordET.setText(loginPSW);
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle("登录：");
-			builder.setView(passwordET);
-			builder.setMessage("用户名:" + loginId)
-					.setCancelable(false)
-					.setPositiveButton("确认",
-							new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which) {
-									// 密码有变更，代表用户修改过密码，更新数据库
-									if (loginPSW != passwordET.getText()
-											.toString()) {
-										db.updateUser(loginId, new User(
-												loginId, passwordET.getText()
-														.toString(), userName));
-									}
-									// 向服务器发送登录请求
-									login(loginId, passwordET.getText()
-											.toString());
-									dialog.dismiss();
-									db.close();
-								}
-							});
-			builder.setNegativeButton("取消", null);
-			builder.create().show();
+		// 若数据库有数据，则根据数据填充文本输入框
+		if (list.size() != 0) {
+			userIdET.setText(list.get(0).getUserid());
+			passwordET.setText(list.get(0).getPassword());
 		}
-		cursor.close();
-		db.close();
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("登 录：");
+		builder.setView(layout);
+		builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+
+				// 发送登录请求
+				if (!userIdET.getText().toString().trim().equals("")
+						&& !passwordET.getText().toString().trim().equals("")) {
+					boolean info = login(userIdET.getText().toString().trim(),
+							passwordET.getText().toString().trim());
+					Toast.makeText(SettingsActivity.this,
+							info ? "登录成功" : "登录失败", Toast.LENGTH_SHORT).show();
+				} else {
+					Toast.makeText(SettingsActivity.this, "输入有误，请重试",
+							Toast.LENGTH_SHORT).show();
+				}
+				dialog.dismiss();
+			}
+		});
+		builder.setNegativeButton("取消", null);
+		builder.create().show();
 	}
 
-	// 向服务器发送登录请求
+	// 向服务器发送登录请求,返回登录是否成功
+	// 其次，判断该用户是否为新用户和是否更改了密码，是则更新数据库，
 	boolean login(String id, String password) {
 		String url = "http://172.16.41.161/Mobile/login";
 		String param = "loginName=" + id + "&password=" + password;
-		String response = GetPostUtil.sendPost(url, param);
-		Toast.makeText(this, response, Toast.LENGTH_SHORT).show();
-		if (!response.equals("登录成功")) // 密码不对 ，重新登录
+		
+		LinkToWeb task = new LinkToWeb();
+		String response = task.doInBackground(url, param);
+
+		if (response.equals("登录成功")) {
+			session[0] = id;
+			session[1] = password;
+			// 该用户是否为新用户，是则放入数据库
+			updateDatabase(id, password);
+		} else // 密码不对 ，重新登录
 		{
-			showLoginDialog();
+			Toast.makeText(this, response, Toast.LENGTH_SHORT).show();
 		}
 		return response.equals("登录成功");
+	}
+
+	// 根据登录信息判断是否更新数据库（针对新用户和更改了密码的情况）
+	void updateDatabase(String id, String password) {
+		//标记是否新用户
+		boolean flag = true;
+		for (int i = 0; i < list.size(); i++) {
+			if (list.get(i).getUserid().equals(id)) {
+				flag = false;
+				// 若密码有更改，更新数据库
+				if (!list.get(i).getPassword().equals(password)) {
+					UserDatabaseHelper db = new UserDatabaseHelper(this,
+							UserDatabaseHelper.DATABASE_NAME);
+					//更改密码
+					list.get(i).setPassword(password);
+					db.updateUser(id, list.get(i));
+					db.close();
+				}
+				break;
+			}
+		}
+		if (flag) {
+			UserDatabaseHelper db = new UserDatabaseHelper(this,
+					UserDatabaseHelper.DATABASE_NAME);
+			User user = new User();
+			user.setUserid(id);
+			user.setPassword(password);
+			user.setUsername("");
+			db.insertUser(user);
+			db.close();
+		}
 	}
 
 	// 向服务器发送注册请求，若成功则写入数据库，否则 弹出错误提示,并重新弹出注册Dialog让用户重新注册
@@ -360,10 +380,12 @@ public class SettingsActivity extends Activity {
 		String param = "user.loginName=" + registeredInfo[0]
 				+ "&user.password=" + registeredInfo[1] + "&user.name="
 				+ registeredInfo[3];
-		String response = GetPostUtil.sendPost(url, param); // 发送数据至服务器
-		Toast.makeText(this,
-				"注册" + (Boolean.parseBoolean(response) ? "成功" : "失败"),
-				Toast.LENGTH_LONG).show();
+
+		LinkToWeb task = new LinkToWeb();
+		String response = task.doInBackground(url, param);
+
+		Toast.makeText( this, "注册" + (Boolean.parseBoolean(response) ? "成功" : "失败"
+								+ response), Toast.LENGTH_LONG).show();
 		// 注册成功 写入数据库
 		if (Boolean.parseBoolean(response)) {
 			User user = new User();
@@ -375,11 +397,8 @@ public class SettingsActivity extends Activity {
 			UserDatabaseHelper db = new UserDatabaseHelper(
 					SettingsActivity.this, UserDatabaseHelper.DATABASE_NAME);
 			db.insertUser(user);
-			uploadData(); // 可以登录发送数据了
-		} else {
-			showRegisteredDiolag(); // 重新注册
+			db.close();
 		}
-
 	}
 
 	// 弹出注册Dialog 根据输入信息发送注册请求
@@ -387,8 +406,8 @@ public class SettingsActivity extends Activity {
 	void showRegisteredDiolag() {
 
 		LayoutInflater inflater = getLayoutInflater();
-		View layout = inflater.inflate(R.layout.registered_layout,
-				(ViewGroup) findViewById(R.id.registed_dialog));
+		View layout = inflater.inflate(R.layout.register_layout,
+				(ViewGroup) findViewById(R.id.register_dialog));
 
 		// 分别为 账号，密码，密码确认，昵称 的文本输入框 和 检测输入信息是否有误的按钮
 		final EditText userid = (EditText) layout
@@ -458,13 +477,30 @@ public class SettingsActivity extends Activity {
 				} catch (Exception e) {
 					Toast.makeText(SettingsActivity.this, "没检测过不要按确认啊，测试一下吧~",
 							Toast.LENGTH_LONG).show();
-					keepDialog(dialog);
 				}
 			}
 		});
 		builder.setNegativeButton("取消", null);
 		builder.create().show();
 	}
+
+	// 后台连接服务器的类,先检测网络状态，然后在发送数据
+	class LinkToWeb extends AsyncTask<String, Integer, String> {
+		@Override
+		protected String doInBackground(String... allUrl) {
+			String result = null;
+			ConnectivityManager cwjManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo info = cwjManager.getActiveNetworkInfo();
+			if (info == null || !info.isAvailable()) {
+				Toast.makeText(SettingsActivity.this, "没检测到网络，请先联网~",
+						Toast.LENGTH_LONG).show();
+				return "false";
+			}
+			System.out.println(allUrl[0] + "  " + allUrl[1]);
+			result = GetPostUtil.sendPost(allUrl[0], allUrl[1]); // 发送数据至服务器
+			return result;
+		}
+	};
 
 	// 弹出提示框 用于显示其他函数执行过程中返回的提示信息
 	void showMessageDiolog(String info) {
@@ -474,16 +510,4 @@ public class SettingsActivity extends Activity {
 				.setPositiveButton("确认", null);
 		builder.create().show();
 	}
-
-	private void keepDialog(DialogInterface dialog) {
-		try {
-			Field field = dialog.getClass().getSuperclass()
-					.getDeclaredField("mShowing");
-			field.setAccessible(true);
-			field.set(dialog, true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 }
